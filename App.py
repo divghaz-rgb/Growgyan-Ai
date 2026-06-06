@@ -3,7 +3,7 @@ import google.generativeai as genai
 from PIL import Image
 
 # 1. एआई कॉन्फ़िगरेशन (अपनी असली Gemini API Key यहाँ डालें)
-GOOGLE_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
+GOOGLE_API_KEY = "Q.Ab8RN6KdOxOyPMmfh1Qvtcegwk6HDSxcKrj6lXxjL2rQBwu-2A"
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # ऐप सेटअप
@@ -18,7 +18,7 @@ if not st.session_state.logged_in:
     st.title("🔐 GrowGyan AI - Login System")
     st.write("कृपया ऐप का उपयोग करने के लिए लॉगिन करें।")
     
-    # इनपुट बॉक्स (आपके ब्लूप्रिंट के अनुसार)
+    # इनपुट बॉक्स
     username = st.text_input("Phone Number or Email (फ़ोन नंबर या ईमेल):")
     password = st.text_input("Password (पासवर्ड):", type="password")
     
@@ -45,17 +45,15 @@ else:
         st.subheader("किसानों का सच्चा डिजिटल दोस्त")
         st.write("---")
         
-        # फीचर्स की लिस्ट आपके नोट के हिसाब से
-        tab1, tab2, tab3 = st.tabs(["📸 रोग पहचान", "💬 चैट बॉट", "🔊 वॉइस असिस्टेंट"])
+        tab1, tab2, tab3 = st.tabs(["📸 लाइव रोग स्कैन", "💬 चैट बॉट", "🔊 वॉइस असिस्टेंट"])
         
         with tab1:
             st.header("फसल की बीमारी पहचानें")
-            uploaded_file = st.file_uploader("फसल के बीमार हिस्से की फोटो अपलोड करें...", type=["jpg", "jpeg", "png"])
-            if uploaded_file:
-                image = Image.open(uploaded_file)
+            cam_image = st.camera_input("फसल के बीमार हिस्से की तुरंत फोटो खींचें 📸")
+            if cam_image:
+                image = Image.open(cam_image)
                 st.image(image, use_container_width=True)
                 st.info("🔄 AI जांच कर रहा है...")
-                # (यहाँ एआई मॉडल का कोड काम करेगा)
                 
         with tab2:
             st.header("चैट बॉट (लिखकर सवाल पूछें)")
@@ -73,11 +71,15 @@ else:
         st.subheader("The Digital Friend of Farmers")
         st.write("---")
         
-        tab1, tab2, tab3 = st.tabs(["📸 Scan Disease", "💬 Chat Bot", "🔊 Voice Assistant"])
+        tab1, tab2, tab3 = st.tabs(["📸 Live Scan", "💬 Chat Bot", "🔊 Voice Assistant"])
         
         with tab1:
             st.header("Crop Disease Scanner")
-            uploaded_file = st.file_uploader("Upload crop photo...", type=["jpg", "jpeg", "png"])
+            cam_image = st.camera_input("Take a live photo of the affected crop 📸")
+            if cam_image:
+                image = Image.open(cam_image)
+                st.image(image, use_container_width=True)
+                st.info("🔄 AI analyzing the crop disease...")
             
         with tab2:
             st.header("Chat Bot")
@@ -86,3 +88,4 @@ else:
         with tab3:
             st.header("Voice Assistant")
             st.warning("🎤 Voice Feature coming soon!")
+        
