@@ -55,6 +55,15 @@ else:
                 st.image(image, use_container_width=True)
                 st.info("🔄 AI जांच कर रहा है...")
                 
+                # असली एआई रिस्पॉन्स कोड (हिंदी)
+                try:
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    response = model.generate_content(["इस पौधे की पत्ती को देखकर बताएं कि इसमें कौन सी बीमारी है और इसका घरेलू या वैज्ञानिक इलाज क्या है? जवाब हिंदी में दें।", image])
+                    st.success("🤖 एआई का समाधान:")
+                    st.write(response.text)
+                except Exception as e:
+                    st.error(f"त्रुटि: {e}. कृपया जांचें कि आपकी API Key सही है या नहीं।")
+                
         with tab2:
             st.header("चैट बॉट (लिखकर सवाल पूछें)")
             user_msg = st.text_input("अपनी समस्या यहाँ लिखें:")
@@ -80,6 +89,15 @@ else:
                 image = Image.open(cam_image)
                 st.image(image, use_container_width=True)
                 st.info("🔄 AI analyzing the crop disease...")
+                
+                # असली एआई रिस्पॉन्स कोड (इंग्लिश)
+                try:
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    response = model.generate_content(["Identify the crop disease from this image and provide solutions to cure it.", image])
+                    st.success("🤖 AI Solution:")
+                    st.write(response.text)
+                except Exception as e:
+                    st.error(f"Error: {e}. Please check your API Key.")
             
         with tab2:
             st.header("Chat Bot")
@@ -88,4 +106,4 @@ else:
         with tab3:
             st.header("Voice Assistant")
             st.warning("🎤 Voice Feature coming soon!")
-        
+    
