@@ -4,7 +4,7 @@ from PIL import Image
 
 # 1. एआई कॉन्फ़िगरेशन (यहाँ अपनी असली Gemini API Key डालें)
 GOOGLE_API_KEY = "AQ.Ab8RN6LmwXMWIEvbwumLYZ-FXe7jKLbDTbZFd0Os-a-9NhUwQQ"
-genai.configure(api_key=)
+genai.configure(api_key=GOOGLE_API_KEY)
 
 # ऐप सेटअप
 st.set_page_config(page_title="GrowGyan AI", page_icon="🌱", layout="centered")
