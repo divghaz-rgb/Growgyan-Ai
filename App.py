@@ -2,14 +2,14 @@ import streamlit as st
 import google.generativeai as genai
 from PIL import Image
 
-# 1. एआई कॉन्फ़िगरेशन (अपनी असली Gemini API Key यहाँ डालें)
-GOOGLE_API_KEY = "Q.Ab8RN6KdOxOyPMmfh1Qvtcegwk6HDSxcKrj6lXxjL2rQBwu-2A"
+# 1. एआई कॉन्फ़िगरेशन (यहाँ अपनी असली Gemini API Key डालें)
+GOOGLE_API_KEY = "AQ.Ab8RN6I0sR8SFe46_MQ8ktwdkA6dejtPq7HNk_OvY62u8ys9zQ"
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # ऐप सेटअप
 st.set_page_config(page_title="GrowGyan AI", page_icon="🌱", layout="centered")
 
-# सेशन स्टेट (ताकि ऐप याद रखे कि यूजर ने लॉगिन किया है या नहीं)
+# सेशन स्टेट (लॉगिन याद रखने के लिए)
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
@@ -18,92 +18,84 @@ if not st.session_state.logged_in:
     st.title("🔐 GrowGyan AI - Login System")
     st.write("कृपया ऐप का उपयोग करने के लिए लॉगिन करें।")
     
-    # इनपुट बॉक्स
     username = st.text_input("Phone Number or Email (फ़ोन नंबर या ईमेल):")
     password = st.text_input("Password (पासवर्ड):", type="password")
     
     if st.button("Login (लॉगिन करें)"):
-        if username and password: # अभी टेस्टिंग के लिए कोई भी नाम-पासवर्ड चलेगा
+        if username and password:
             st.session_state.logged_in = True
             st.rerun()
         else:
             st.error("कृपया फोन नंबर/ईमेल और पासवर्ड दोनों भरें!")
 
-# ----------------- स्क्रीन 2: मुख्य ऐप (लॉगिन के बाद) -----------------
+# ----------------- स्क्रीन 2: मुख्य ऐप (Gemini AI स्टाइल) -----------------
 else:
-    # भाषा का चयन (हिंदी और इंग्लिश)
-    lang = st.sidebar.selectbox("🌐 Choose Language / भाषा चुनें", ["English", "Hindi"])
-    
-    # लॉगआउट बटन
+    # साइडबार विकल्प
+    lang = st.sidebar.selectbox("🌐 भाषा चुनें / Language", ["Hindi", "English"])
     if st.sidebar.button("Logout (लॉगआउट)"):
         st.session_state.logged_in = False
         st.rerun()
 
-    # हिंदी भाषा का इंटरफ़ेस
+    # नाम और डिज़ाइन सेटअप
     if lang == "Hindi":
-        st.title("🌱 GrowGyan AI (ग्रोग्यान एआई)")
-        st.subheader("किसानों का सच्चा डिजिटल दोस्त")
-        st.write("---")
-        
-        tab1, tab2, tab3 = st.tabs(["📸 लाइव रोग स्कैन", "💬 चैट बॉट", "🔊 वॉइस असिस्टेंट"])
-        
-        with tab1:
-            st.header("फसल की बीमारी पहचानें")
-            cam_image = st.camera_input("फसल के बीमार हिस्से की तुरंत फोटो खींचें 📸")
-            if cam_image:
-                image = Image.open(cam_image)
-                st.image(image, use_container_width=True)
-                st.info("🔄 AI जांच कर रहा है...")
-                
-                # असली एआई रिस्पॉन्स कोड (हिंदी)
-                try:
-                    model = genai.GenerativeModel('gemini-1.5-flash')
-                    response = model.generate_content(["इस पौधे की पत्ती को देखकर बताएं कि इसमें कौन सी बीमारी है और इसका घरेलू या वैज्ञानिक इलाज क्या है? जवाब हिंदी में दें।", image])
-                    st.success("🤖 एआई का समाधान:")
-                    st.write(response.text)
-                except Exception as e:
-                    st.error(f"त्रुटि: {e}. कृपया जांचें कि आपकी API Key सही है या नहीं।")
-                
-        with tab2:
-            st.header("चैट बॉट (लिखकर सवाल पूछें)")
-            user_msg = st.text_input("अपनी समस्या यहाँ लिखें:")
-            if st.button("पूछें"):
-                st.write("🤖 GrowGyan AI: आपकी मदद के लिए समाधान तैयार किया जा रहा है...")
-
-        with tab3:
-            st.header("वॉइस (बोलने वाला दोस्त)")
-            st.warning("🎤 वॉइस असिस्टेंट फीचर पर अभी काम चल रहा है!")
-
-    # इंग्लिश भाषा का इंटरफ़ेस
+        st.title("🌱 GrowGyan AI")
+        st.subheader("आपका पर्सनल खेती-बाड़ी एआई दोस्त")
+        prompt_label = "पूछें: फोटो खींचें, लिखकर या बोलकर समस्या बताएं..."
+        btn_label = "जवाब ढूँढें ✨"
+        voice_msg = "🎤 वॉइस असिस्टेंट चालू है... अपनी समस्या बोलें!"
+        system_instruction = "इस पौधे की पत्ती को देखकर बताएं कि इसमें कौन सी बीमारी है और इसका घरेलू या वैज्ञानिक इलाज क्या है? जवाब हिंदी में दें।"
     else:
         st.title("🌱 GrowGyan AI")
-        st.subheader("The Digital Friend of Farmers")
-        st.write("---")
-        
-        tab1, tab2, tab3 = st.tabs(["📸 Live Scan", "💬 Chat Bot", "🔊 Voice Assistant"])
-        
-        with tab1:
-            st.header("Crop Disease Scanner")
-            cam_image = st.camera_input("Take a live photo of the affected crop 📸")
+        st.subheader("Your Personal Agriculture AI Friend")
+        prompt_label = "Ask anything: Take a photo, type, or speak your problem..."
+        btn_label = "Find Solution ✨"
+        voice_msg = "🎤 Voice Assistant is active... Speak now!"
+        system_instruction = "Identify the crop disease or answer the farming question based on the input."
+
+    st.write("---")
+
+    # 1. लाइव कैमरा इनपुट (सबसे ऊपर सीधे कैमरा खुलेगा)
+    cam_image = st.camera_input("कैमरा / Camera 📸")
+    
+    # 2. वॉइस असिस्टेंट बटन (कैमरे के ठीक नीचे)
+    if st.button("बोलकर पूछें / Speak 🎤"):
+        st.info(voice_msg)
+        # भविष्य में यहाँ वॉइस-टू-टेक्स्ट कोड जुड़ेगा
+
+    # 3. चैट बॉक्स इनपुट (लिखकर पूछने के लिए)
+    user_query = st.text_input(prompt_label, placeholder="यहाँ टाइप करें...")
+
+    # 4. प्रोसेसिंग और एआई रिजल्ट (सब कुछ एक ही जगह)
+    if st.button(btn_label):
+        # अगर सिर्फ फोटो खींची है
+        if cam_image and not user_query:
+            image = Image.open(cam_image)
+            st.image(image, caption="Uploaded Crop", use_container_width=True)
+            st.info("🔄 AI जांच कर रहा है...")
+            try:
+                model = genai.GenerativeModel('gemini-1.5-flash')
+                response = model.generate_content([system_instruction, image])
+                st.success("🤖 GrowGyan AI:")
+                st.write(response.text)
+            except Exception as e:
+                st.error(f"Error: {e}. Please check your API Key.")
+                
+        # अगर फोटो के साथ कुछ लिखा भी है या सिर्फ सवाल पूछा है
+        elif user_query:
+            inputs = [user_query]
             if cam_image:
                 image = Image.open(cam_image)
                 st.image(image, use_container_width=True)
-                st.info("🔄 AI analyzing the crop disease...")
+                inputs.append(image)
                 
-                # असली एआई रिस्पॉन्स कोड (इंग्लिश)
-                try:
-                    model = genai.GenerativeModel('gemini-1.5-flash')
-                    response = model.generate_content(["Identify the crop disease from this image and provide solutions to cure it.", image])
-                    st.success("🤖 AI Solution:")
-                    st.write(response.text)
-                except Exception as e:
-                    st.error(f"Error: {e}. Please check your API Key.")
+            st.info("🔄 AI विचार कर रहा है...")
+            try:
+                model = genai.GenerativeModel('gemini-1.5-flash')
+                response = model.generate_content(inputs)
+                st.success("🤖 GrowGyan AI:")
+                st.write(response.text)
+            except Exception as e:
+                st.error(f"Error: {e}. Please check your API Key.")
+        else:
+            st.warning("कृपया पहले फोटो खींचें या कुछ टाइप करें!")
             
-        with tab2:
-            st.header("Chat Bot")
-            user_msg = st.text_input("Type your question here:")
-            
-        with tab3:
-            st.header("Voice Assistant")
-            st.warning("🎤 Voice Feature coming soon!")
-    
