@@ -3,8 +3,8 @@ import google.generativeai as genai
 from PIL import Image
 
 # 1. एआई कॉन्फ़िगरेशन (यहाँ अपनी असली Gemini API Key डालें)
-GOOGLE_API_KEY = "AQ.Ab8RN6I0sR8SFe46_MQ8ktwdkA6dejtPq7HNk_OvY62u8ys9zQ"
-genai.configure(api_key=AQ.Ab8RN6LmwXMWIEvbwumLYZ-FXe7jKLbDTbZFd0Os-a-9NhUwQQ)
+GOOGLE_API_KEY = "AQ.Ab8RN6LmwXMWIEvbwumLYZ-FXe7jKLbDTbZFd0Os-a-9NhUwQQ"
+genai.configure(api_key=)
 
 # ऐप सेटअप
 st.set_page_config(page_title="GrowGyan AI", page_icon="🌱", layout="centered")
