@@ -1,10 +1,16 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from PIL import Image
 
 # 1. एआई कॉन्फ़िगरेशन (यहाँ अपनी असली Gemini API Key डालें)
-GOOGLE_API_KEY = "AQ.Ab8RN6LmwXMWIEvbwumLYZ-FXe7jKLbDTbZFd0Os-a-9NhUwQQ"
-genai.configure(api_key=GOOGLE_API_KEY)
+GOOGLE_API_KEY = "AQ.Ab8RN6KIxEcZowSrgvajhfx7OrEdqoua6owxU-zYe-b_1qZPOQ"
+
+# नया क्लाइंट फॉर्मेट जो बिना एरर के काम करेगा
+try:
+    client = genai.Client(api_key=GOOGLE_API_KEY)
+except Exception as e:
+    st.error(f"Client Initialization Error: {e}")
 
 # ऐप सेटअप
 st.set_page_config(page_title="GrowGyan AI", page_icon="🌱", layout="centered")
@@ -30,7 +36,74 @@ if not st.session_state.logged_in:
 
 # ----------------- स्क्रीन 2: मुख्य ऐप (Gemini AI स्टाइल) -----------------
 else:
-    # साइडबार विकल्प
+    # भाषा का चयन
+    lang = st.sidebar.selectbox("🌐 भाषा चुनें / Language", ["Hindi", "English"])
+    if st.sidebar.button("Logout (लॉगआउट)"):
+        st.session_state.logged_in = False
+        st.rerun()
+
+    # डिज़ाइन टेक्स्ट सेटअप
+    if lang == "Hindi":
+        st.title("🌱 GrowGyan AI")
+        st.subheader("आपका पर्सनल खेती-बाड़ी एआई दोस्त")
+        prompt_label = "पूछें: फोटो खींचें, लिखकर या बोलकर समस्या बताएं..."
+        btn_label = "जवाब ढूँढें ✨"
+        voice_msg = "🎤 वॉइस असिस्टेंट चालू है... अपनी समस्या बोलें!"
+        system_instruction = "इस पौधे की पत्ती को देखकर बताएं कि इसमें कौन सी बीमारी है और इसका घरेलू या वैज्ञानिक इलाज क्या है? जवाब हिंदी में दें।"
+    else:
+        st.title("🌱 GrowGyan AI")
+        st.subheader("Your Personal Agriculture AI Friend")
+        prompt_label = "Ask anything: Take a photo, type, or speak your problem..."
+        btn_label = "Find Solution ✨"
+        voice_msg = "🎤 Voice Assistant is active... Speak now!"
+        system_instruction = "Identify the crop disease or answer the farming question based on the input."
+
+    st.write("---")
+
+    # 1. लाइव कैमरा इनपुट
+    cam_image = st.camera_input("कैमरा / Camera 📸")
+    
+    # 2. वॉइस असिस्टेंट बटन
+    if st.button("बोलकर पूछें / Speak 🎤"):
+        st.info(voice_msg)
+
+    # 3. चैट बॉक्स इनपुट
+    user_query = st.text_input(prompt_label, placeholder="यहाँ टाइप करें...")
+
+    # 4. प्रोसेसिंग और एआई रिजल्ट (नया gemini-2.5-flash मॉडल जो बिल्कुल मुफ्त है)
+    if st.button(btn_label):
+        contents = []
+        
+        # अगर फोटो खींची है तो उसे जोड़ें
+        if cam_image:
+            image = Image.open(cam_image)
+            st.image(image, caption="Uploaded Crop", use_container_width=True)
+            contents.append(image)
+            
+        # अगर कुछ टाइप किया है तो उसे जोड़ें
+        if user_query:
+            contents.append(user_query)
+        else:
+            # अगर सिर्फ फोटो है तो सिस्टम इंस्ट्रक्शन जोड़ें
+            if cam_image:
+                contents.append(system_instruction)
+
+        # अगर दोनों में से कुछ भी उपलब्ध है तो एआई को भेजें
+        if contents:
+            st.info("🔄 AI विचार कर रहा है...")
+            try:
+                # बिल्कुल नया मुफ्त मॉडल कॉल
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=contents,
+                )
+                st.success("🤖 GrowGyan AI:")
+                st.write(response.text)
+            except Exception as e:
+                st.error(f"Error: {e}. कृपया जांचें कि आपकी API Key सही है या नहीं।")
+        else:
+            st.warning("कृपया पहले फोटो खींचें या कुछ टाइप करें!")
+
     lang = st.sidebar.selectbox("🌐 भाषा चुनें / Language", ["Hindi", "English"])
     if st.sidebar.button("Logout (लॉगआउट)"):
         st.session_state.logged_in = False
